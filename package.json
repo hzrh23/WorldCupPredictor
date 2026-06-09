@@ -1,0 +1,17 @@
+{
+  "name": "worldcup-pool",
+  "version": "1.0.0",
+  "description": "World Cup 2026 prediction pool web app",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.22.2"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
