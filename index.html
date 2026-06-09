@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>World Cup 2026 Pool</title>
+  <style>
+    :root { font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #111827; background: #f6f7fb; }
+    body { margin: 0; }
+    header { background: linear-gradient(135deg, #111827, #374151); color: white; padding: 32px 18px; }
+    main { max-width: 1180px; margin: 0 auto; padding: 22px 16px 70px; }
+    .hero { max-width: 1180px; margin: 0 auto; }
+    h1 { margin: 0 0 8px; font-size: clamp(28px, 4vw, 48px); }
+    h2 { margin: 28px 0 10px; }
+    h3 { margin: 0 0 10px; }
+    .card { background: white; border: 1px solid #e5e7eb; border-radius: 18px; padding: 18px; box-shadow: 0 8px 24px rgba(17,24,39,.06); margin-bottom: 16px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+    .group { border: 1px solid #e5e7eb; border-radius: 14px; padding: 12px; }
+    .team-rank { display:grid; grid-template-columns: 1fr 78px; gap: 8px; align-items:center; padding: 5px 0; }
+    input, select, button { font: inherit; }
+    select, input[type="text"], input[type="email"], input[type="number"] { width: 100%; box-sizing: border-box; padding: 9px 10px; border: 1px solid #d1d5db; border-radius: 10px; background:white; }
+    .two { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+    .muted { color: #6b7280; font-size: 14px; }
+    .warning { color: #b45309; font-weight: 700; }
+    .ok { color: #047857; font-weight: 700; }
+    .bar { position: sticky; bottom: 0; background: rgba(255,255,255,.96); border-top: 1px solid #e5e7eb; padding: 12px 16px; display: flex; gap: 12px; align-items: center; justify-content: space-between; backdrop-filter: blur(10px); }
+    button { border: 0; border-radius: 12px; padding: 11px 16px; cursor: pointer; background: #111827; color: white; font-weight: 700; }
+    button.secondary { background: #e5e7eb; color: #111827; }
+    button:disabled { opacity: .45; cursor: not-allowed; }
+    .third-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 8px; }
+    label.third { border: 1px solid #e5e7eb; border-radius: 12px; padding: 9px; display:flex; gap: 8px; align-items:center; }
+    .bracket { display:grid; grid-template-columns: repeat(5, minmax(210px, 1fr)); gap: 14px; overflow-x:auto; padding-bottom: 8px; }
+    .round-col { min-width: 210px; }
+    .match { border: 1px solid #e5e7eb; border-radius: 14px; padding: 10px; margin-bottom: 12px; background: #fff; }
+    .match-title { font-weight: 800; font-size: 13px; margin-bottom: 6px; color:#374151; }
+    .slot { font-size: 13px; color:#6b7280; margin: 2px 0; }
+    table { width: 100%; border-collapse: collapse; }
+    td, th { border-bottom: 1px solid #e5e7eb; padding: 8px; text-align: left; vertical-align: top; }
+    .pill { display: inline-block; background: #eef2ff; border-radius: 999px; padding: 3px 8px; margin: 2px; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <header><div class="hero"><h1>World Cup 2026 Bracket Pool</h1><p>Rank every group, pick the best 8 third-place teams, then complete the FIFA knockout bracket.</p></div></header>
+  <main>
+    <section class="card">
+      <h2>Your info</h2>
+      <div class="two">
+        <label>Name <input id="name" type="text" placeholder="Your name" required></label>
+        <label>Email / phone optional <input id="email" type="email" placeholder="Optional"></label>
+      </div>
+      <p class="muted">Format: 12 groups of 4. Top two from each group plus the best eight third-place teams advance.</p>
+    </section>
+
+    <section class="card">
+      <h2>1. Rank each group</h2>
+      <p class="muted">Give each team a unique rank from 1 to 4. Rank 1 = group winner, Rank 2 = runner-up, Rank 3 = third place.</p>
+      <div id="groups" class="grid"></div>
+    </section>
+
+    <section class="card">
+      <h2>2. Pick the best 8 third-place teams</h2>
+      <p class="muted">These options update from your Rank 3 picks above.</p>
+      <div id="thirds" class="third-grid"></div>
+    </section>
+
+    <section class="card">
+      <h2>3. Knockout bracket</h2>
+      <p class="muted">Round of 32 uses FIFA's bracket labels. Third-place slots only show eligible third-place teams from the groups listed for that match.</p>
+      <div id="bracket" class="bracket"></div>
+    </section>
+
+    <section class="card">
+      <h2>Pool settings</h2>
+      <div class="two">
+        <label>Buy-in $ <input id="buyIn" type="number" min="0" placeholder="e.g. 10"></label>
+        <label>Group-stage points per correct <input id="groupPts" type="number" min="0" value="2"></label>
+        <label>Round of 32 points <input id="r32Pts" type="number" min="0" value="3"></label>
+        <label>Round of 16 points <input id="r16Pts" type="number" min="0" value="5"></label>
+        <label>Quarterfinal points <input id="qfPts" type="number" min="0" value="8"></label>
+        <label>Semifinal points <input id="sfPts" type="number" min="0" value="12"></label>
+        <label>Final points <input id="finalPts" type="number" min="0" value="20"></label>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Admin: view submissions</h2>
+      <div class="two">
+        <input id="adminPassword" type="text" placeholder="Admin password">
+        <button class="secondary" onclick="loadSubmissions()">Load submissions</button>
+      </div>
+      <div id="submissions"></div>
+    </section>
+  </main>
+  <div class="bar"><span class="status" id="status">Fill out rankings to begin.</span><button id="submitBtn" onclick="submitEntry()" disabled>Submit picks</button></div>
+
+<script>
+const GROUPS = {
+  A: ['Mexico','South Africa','Korea Republic','Czechia'],
+  B: ['Canada','Bosnia and Herzegovina','Qatar','Switzerland'],
+  C: ['Brazil','Morocco','Haiti','Scotland'],
+  D: ['United States','Paraguay','Australia','Türkiye'],
+  E: ['Germany','Curaçao','Côte d’Ivoire','Ecuador'],
+  F: ['Netherlands','Tunisia','Japan','Sweden'],
+  G: ['Belgium','IR Iran','New Zealand','Egypt'],
+  H: ['Spain','Cabo Verde','Saudi Arabia','Uruguay'],
+  I: ['France','Senegal','Iraq','Norway'],
+  J: ['Argentina','Algeria','Jordan','Austria'],
+  K: ['Portugal','Colombia','Uzbekistan','Congo DR'],
+  L: ['England','Croatia','Ghana','Panama']
+};
+const R32 = [
+  {id:73, a:{type:'pos',group:'A',rank:2,label:'2A'}, b:{type:'pos',group:'B',rank:2,label:'2B'}},
+  {id:74, a:{type:'pos',group:'E',rank:1,label:'1E'}, b:{type:'third',groups:['A','B','C','D','F'],label:'3rd A/B/C/D/F'}},
+  {id:77, a:{type:'pos',group:'I',rank:1,label:'1I'}, b:{type:'third',groups:['C','D','F','G','H'],label:'3rd C/D/F/G/H'}},
+  {id:75, a:{type:'pos',group:'F',rank:1,label:'1F'}, b:{type:'pos',group:'C',rank:2,label:'2C'}},
+  {id:83, a:{type:'pos',group:'K',rank:2,label:'2K'}, b:{type:'pos',group:'L',rank:2,label:'2L'}},
+  {id:84, a:{type:'pos',group:'H',rank:1,label:'1H'}, b:{type:'pos',group:'J',rank:2,label:'2J'}},
+  {id:81, a:{type:'pos',group:'D',rank:1,label:'1D'}, b:{type:'third',groups:['B','E','F','I','J'],label:'3rd B/E/F/I/J'}},
+  {id:82, a:{type:'pos',group:'G',rank:1,label:'1G'}, b:{type:'third',groups:['A','E','H','I','J'],label:'3rd A/E/H/I/J'}},
+  {id:76, a:{type:'pos',group:'C',rank:1,label:'1C'}, b:{type:'pos',group:'F',rank:2,label:'2F'}},
+  {id:78, a:{type:'pos',group:'E',rank:2,label:'2E'}, b:{type:'pos',group:'I',rank:2,label:'2I'}},
+  {id:79, a:{type:'pos',group:'A',rank:1,label:'1A'}, b:{type:'third',groups:['C','E','F','H','I'],label:'3rd C/E/F/H/I'}},
+  {id:80, a:{type:'pos',group:'L',rank:1,label:'1L'}, b:{type:'third',groups:['E','H','I','J','K'],label:'3rd E/H/I/J/K'}},
+  {id:86, a:{type:'pos',group:'J',rank:1,label:'1J'}, b:{type:'pos',group:'H',rank:2,label:'2H'}},
+  {id:88, a:{type:'pos',group:'D',rank:2,label:'2D'}, b:{type:'pos',group:'G',rank:2,label:'2G'}},
+  {id:85, a:{type:'pos',group:'B',rank:1,label:'1B'}, b:{type:'third',groups:['E','F','G','I','J'],label:'3rd E/F/G/I/J'}},
+  {id:87, a:{type:'pos',group:'K',rank:1,label:'1K'}, b:{type:'third',groups:['D','E','I','J','L'],label:'3rd D/E/I/J/L'}}
+];
+const NEXT = {
+  89:[74,77], 90:[73,75], 93:[83,84], 94:[81,82], 91:[76,78], 92:[79,80], 95:[86,88], 96:[85,87],
+  97:[89,90], 98:[93,94], 99:[91,92], 100:[95,96], 101:[97,98], 102:[99,100], 104:[101,102]
+};
+const ROUND_GROUPS = [
+  ['Round of 32', R32.map(m=>m.id)],
+  ['Round of 16', [89,90,93,94,91,92,95,96]],
+  ['Quarterfinals', [97,98,99,100]],
+  ['Semifinals', [101,102]],
+  ['Final', [104]]
+];
+let bracketPicks = {};
+
+function escapeHtml(s){ return String(s).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
+function renderGroups(){
+  const el = document.getElementById('groups');
+  el.innerHTML = Object.entries(GROUPS).map(([g, teams]) => `<div class="group"><h3>Group ${g}</h3>${teams.map(t => `<div class="team-rank"><span>${escapeHtml(t)}</span><select class="rank" data-group="${g}" data-team="${escapeHtml(t)}" onchange="onGroupChange()"><option value="">Rank</option><option>1</option><option>2</option><option>3</option><option>4</option></select></div>`).join('')}</div>`).join('');
+}
+function getGroupRanks(){
+  const out = {};
+  for (const g of Object.keys(GROUPS)) out[g] = {};
+  document.querySelectorAll('.rank').forEach(s => { if (s.value) out[s.dataset.group][s.dataset.team] = +s.value; });
+  return out;
+}
+function groupOrder(g){
+  const ranks = getGroupRanks()[g] || {};
+  const arr = GROUPS[g].map(team => ({team, rank: ranks[team] || null}));
+  if (arr.some(x=>!x.rank)) return null;
+  const nums = arr.map(x=>x.rank).sort().join(',');
+  if (nums !== '1,2,3,4') return null;
+  return arr.sort((a,b)=>a.rank-b.rank).map(x=>x.team);
+}
+function posTeam(group, rank){ const o = groupOrder(group); return o ? o[rank-1] : ''; }
+function thirdTeams(){
+  return Object.keys(GROUPS).map(g => ({group:g, team:posTeam(g,3)})).filter(x=>x.team);
+}
+function selectedThirds(){ return [...document.querySelectorAll('.thirdpick:checked')].map(x => ({group:x.dataset.group, team:x.value})); }
+function renderThirds(){
+  const selected = new Set(selectedThirds().map(x=>x.group));
+  const thirds = thirdTeams();
+  document.getElementById('thirds').innerHTML = thirds.length ? thirds.map(x => `<label class="third"><input type="checkbox" class="thirdpick" data-group="${x.group}" value="${escapeHtml(x.team)}" ${selected.has(x.group)?'checked':''} onchange="onThirdChange()"> <span><b>Group ${x.group}</b>: ${escapeHtml(x.team)}</span></label>`).join('') : '<p class="muted">Rank all groups first.</p>';
+}
+function slotOptions(slot){
+  if (!slot) return [];
+  if (slot.type === 'pos') return [{label:slot.label, team:posTeam(slot.group, slot.rank), group:slot.group}].filter(x=>x.team);
+  const thirds = selectedThirds().filter(x => slot.groups.includes(x.group));
+  return thirds.map(x => ({label:`3${x.group}`, team:x.team, group:x.group}));
+}
+function teamsForMatch(id){
+  const base = R32.find(m=>m.id===id);
+  if (base) return [...slotOptions(base.a), ...slotOptions(base.b)];
+  const prev = NEXT[id] || [];
+  return prev.map(pid => ({label:`W${pid}`, team:bracketPicks[pid] || ''})).filter(x=>x.team);
+}
+function renderBracket(){
+  const el = document.getElementById('bracket');
+  el.innerHTML = ROUND_GROUPS.map(([title, ids]) => `<div class="round-col"><h3>${title}</h3>${ids.map(id => renderMatch(id)).join('')}</div>`).join('');
+}
+function renderMatch(id){
+  const teams = teamsForMatch(id);
+  const current = bracketPicks[id] || '';
+  const base = R32.find(m=>m.id===id);
+  const label = base ? `${base.a.label} vs ${base.b.label}` : (NEXT[id] || []).map(x=>`W${x}`).join(' vs ');
+  return `<div class="match"><div class="match-title">Match ${id}</div><div class="slot">${label}</div><select data-match="${id}" onchange="pickWinner(${id}, this.value)"><option value="">Pick winner</option>${teams.map(x => `<option value="${escapeHtml(x.team)}" ${x.team===current?'selected':''}>${escapeHtml(x.team)} ${x.label?`(${x.label})`:''}</option>`).join('')}</select></div>`;
+}
+function clearDownstream(ids){
+  const queue = [...ids];
+  const allNext = Object.entries(NEXT);
+  while(queue.length){
+    const pid = queue.shift();
+    for (const [mid, deps] of allNext) if (deps.includes(+pid)) { delete bracketPicks[mid]; queue.push(+mid); }
+  }
+}
+function pickWinner(id, val){ bracketPicks[id] = val; clearDownstream([id]); updateAll(false); }
+function onGroupChange(){ bracketPicks = {}; updateAll(true); }
+function onThirdChange(){ bracketPicks = {}; updateAll(true); }
+function validate(){
+  const messages = [];
+  const nameOk = !!document.getElementById('name').value.trim();
+  if (!nameOk) messages.push('Enter your name.');
+  for (const g of Object.keys(GROUPS)) {
+    const ranks = Object.values(getGroupRanks()[g]).sort().join(',');
+    if (ranks !== '1,2,3,4') messages.push(`Group ${g} needs ranks 1,2,3,4 exactly once.`);
+  }
+  if (selectedThirds().length !== 8) messages.push(`Pick exactly 8 third-place teams (${selectedThirds().length}/8 selected).`);
+  const thirdGroupsUsed = new Set();
+  for (const m of R32.filter(m=>m.b.type==='third')) {
+    const winner = bracketPicks[m.id];
+    const options = slotOptions(m.b);
+    const matchTeams = teamsForMatch(m.id).map(x=>x.team);
+    if (winner && !matchTeams.includes(winner)) messages.push(`Match ${m.id} has an invalid winner.`);
+    const chosenThird = options.find(x => x.team === winner);
+    // duplicate third-place teams as R32 participants are caught below using slot assignments
+  }
+  // For bracket integrity, require all third-place slots to have at least one eligible team selected and all match winners picked.
+  for (const m of R32) {
+    if (m.b.type === 'third' && slotOptions(m.b).length === 0) messages.push(`Match ${m.id} needs an eligible third-place team from ${m.b.label}.`);
+  }
+  for (const [title, ids] of ROUND_GROUPS) for (const id of ids) if (!bracketPicks[id]) messages.push(`Pick a winner for Match ${id}.`);
+  return messages;
+}
+function updateStatus(){
+  const errors = validate();
+  const thirdCount = selectedThirds().length;
+  const done = errors.length === 0;
+  document.getElementById('status').innerHTML = done ? '<span class="ok">Ready to submit.</span>' : `<span class="warning">${thirdCount}/8 thirds. ${errors[0] || ''}</span>`;
+  document.getElementById('submitBtn').disabled = !done;
+}
+function updateAll(rebuildThirds){ if (rebuildThirds) renderThirds(); renderBracket(); updateStatus(); }
+function getPicks(){
+  const groupRanks = {};
+  for (const g of Object.keys(GROUPS)) groupRanks[g] = groupOrder(g);
+  const advancing = Object.keys(GROUPS).flatMap(g => [posTeam(g,1), posTeam(g,2)]).concat(selectedThirds().map(x=>x.team));
+  return {
+    groupRanks,
+    thirdPlaceAdvancers: selectedThirds(),
+    advancing,
+    bracket: {...bracketPicks},
+    settings: {
+      buyIn: document.getElementById('buyIn').value,
+      points: { group:+groupPts.value, r32:+r32Pts.value, r16:+r16Pts.value, qf:+qfPts.value, sf:+sfPts.value, final:+finalPts.value }
+    }
+  };
+}
+async function submitEntry(){
+  const errors = validate();
+  if (errors.length) return alert(errors.join('\n'));
+  const name = document.getElementById('name').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const res = await fetch('/api/submit', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({name,email,picks:getPicks()})});
+  const data = await res.json();
+  if(!res.ok) return alert(data.error || 'Could not submit');
+  alert('Submitted! Entry ID: ' + data.id);
+}
+async function loadSubmissions(){
+  const pw = document.getElementById('adminPassword').value;
+  const res = await fetch('/api/submissions?password=' + encodeURIComponent(pw));
+  const data = await res.json();
+  if(!res.ok) return alert(data.error || 'Could not load');
+  document.getElementById('submissions').innerHTML = `<p>${data.length} submissions</p><table><tr><th>Name</th><th>Submitted</th><th>Advancers</th><th>Champion</th></tr>${data.map(s => `<tr><td>${escapeHtml(s.name)}<br><span class="muted">${escapeHtml(s.email||'')}</span></td><td>${new Date(s.submittedAt).toLocaleString()}</td><td>${(s.picks.advancing||[]).map(t=>`<span class="pill">${escapeHtml(t)}</span>`).join('')}</td><td>${escapeHtml((s.picks.bracket||{})['104'] || '')}</td></tr>`).join('')}</table>`;
+}
+document.getElementById('name').addEventListener('input', updateStatus);
+renderGroups(); renderThirds(); renderBracket(); updateStatus();
+</script>
+</body>
+</html>
